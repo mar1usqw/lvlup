@@ -65,73 +65,54 @@ document.addEventListener("DOMContentLoaded", () => {
   // --------------------------
   // GALLERIES: Cloudinary list + Show more
   // --------------------------
-  async function loadGallery(gallery) {
-    const folder = gallery.dataset.folder;          // e.g. "projects/bathroom"
-    const step = Number(gallery.dataset.step) || 12;
+  async function loadGalleryFromCloudinary(gallery) {
+  const folder = gallery.dataset.folder;          // e.g. "projects/bathroom"
+  const step = Number(gallery.dataset.step) || 12;
 
-    // Find "Show more" button in the same section/container
-    const container = gallery.closest("section") || gallery.parentElement;
-    const button = container?.querySelector(".load-more");
+  // Button in same section, otherwise next element
+  const container = gallery.closest("section") || gallery.parentElement;
+  const button =
+    container?.querySelector(".load-more") || gallery.nextElementSibling;
 
-    if (!folder) {
-      console.warn("Gallery missing data-folder", gallery);
-      return;
-    }
+  const res = await fetch(
+    `/.netlify/functions/list-images?folder=${encodeURIComponent(folder)}`,
+    { cache: "no-store" }
+  );
 
-    // Fetch list from Netlify Function
-    const res = await fetch(
-      `/.netlify/functions/list-images?folder=${encodeURIComponent(folder)}`,
-      { cache: "no-store" }
-    );
+  const data = await res.json();
+  const urls = Array.isArray(data.urls) ? data.urls : [];
 
-    if (!res.ok) {
-      console.error("Failed to load images for", folder, await res.text());
-      if (button) button.style.display = "none";
-      return;
-    }
+  gallery.innerHTML = "";
+  let shown = 0;
 
-    const data = await res.json();
-    const urls = Array.isArray(data.urls) ? data.urls : [];
+  function renderMore() {
+    const slice = urls.slice(shown, shown + step);
 
-    gallery.innerHTML = ""; // clear old content
-    let shown = 0;
+    slice.forEach((url) => {
+      const img = document.createElement("img");
+      img.loading = "lazy";
+      img.src = url;
 
-    function renderMore() {
-      const slice = urls.slice(shown, shown + step);
-
-      slice.forEach((url) => {
-        const img = document.createElement("img");
-        img.loading = "lazy";
-        img.src = url;
-        img.alt = "Project image";
-
-        img.addEventListener("click", () => {
-          currentImages = Array.from(gallery.querySelectorAll("img"));
-          currentIndex = currentImages.indexOf(img);
-          openLightbox();
-        });
-
-        gallery.appendChild(img);
+      img.addEventListener("click", () => {
+        currentImages = Array.from(gallery.querySelectorAll("img"));
+        currentIndex = currentImages.indexOf(img);
+        openLightbox();
       });
 
-      shown += slice.length;
+      gallery.appendChild(img);
+    });
 
-      if (button) {
-        button.style.display = shown >= urls.length ? "none" : "inline-block";
-      }
-    }
+    shown += slice.length;
 
-    // initial render
-    renderMore();
-
-    // show more
     if (button) {
-      button.style.display = urls.length > step ? "inline-block" : "none";
-      button.addEventListener("click", renderMore);
+      button.style.display = shown >= urls.length ? "none" : "inline-block";
     }
   }
 
-  document.querySelectorAll(".gallery").forEach((gallery) => {
-    loadGallery(gallery).catch(console.error);
-  });
+  renderMore();
+  button?.addEventListener("click", renderMore);
+}
+
+document.querySelectorAll(".gallery").forEach((gallery) => {
+  loadGalleryFromCloudinary(gallery).catch(console.error);
 });

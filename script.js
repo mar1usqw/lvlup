@@ -63,18 +63,25 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // --------------------------
-  // LOAD GALLERIES
+  // LOAD GALLERIES (Cloudinary folders)
   // --------------------------
   async function loadGallery(gallery) {
     const folder = gallery.dataset.folder;
     const step = Number(gallery.dataset.step) || 12;
 
-    const container = gallery.closest("section") || gallery.parentElement;
-    const button = container?.querySelector(".load-more");
+    const section = gallery.closest("section") || gallery.parentElement;
+    const button = section?.querySelector(".show-more");
 
     if (!folder) {
       console.warn("Missing data-folder on gallery:", gallery);
       return;
+    }
+
+    // Disable button until we know we have more
+    if (button) {
+      button.disabled = true;
+      button.style.opacity = "0.7";
+      button.textContent = "Loading...";
     }
 
     const res = await fetch(
@@ -84,14 +91,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!res.ok) {
       console.error("Function call failed:", folder, await res.text());
+      if (button) {
+        button.disabled = true;
+        button.style.display = "none";
+      }
       return;
     }
 
     const data = await res.json();
-    const urls = Array.isArray(data.urls) ? data.urls : [];
 
-    // Debug:
-    console.log("Loaded", urls.length, "images for", folder);
+    // support both shapes: {images:[...]} or {urls:[...]}
+    const urls = Array.isArray(data.images)
+      ? data.images
+      : (Array.isArray(data.urls) ? data.urls : []);
 
     gallery.innerHTML = "";
     let shown = 0;
@@ -117,13 +129,26 @@ document.addEventListener("DOMContentLoaded", () => {
       shown += slice.length;
 
       if (button) {
-        button.style.display = shown >= urls.length ? "none" : "inline-block";
+        const hasMore = shown < urls.length;
+        button.style.display = hasMore ? "block" : "none";
       }
     }
 
+    // First render
     renderMore();
-    button?.addEventListener("click", renderMore);
+
+    // Button state
+    if (button) {
+      button.disabled = false;
+      button.style.opacity = "1";
+      button.textContent = "Show More";
+
+      // Avoid multiple listeners if loadGallery is ever called again
+      button.onclick = () => renderMore();
+    }
   }
 
-  document.querySelectorAll(".gallery").forEach((g) => loadGallery(g).catch(console.error));
+  document.querySelectorAll(".gallery").forEach((g) => {
+    loadGallery(g).catch(console.error);
+  });
 });

@@ -171,7 +171,7 @@ h2::after {
   z-index: -1;
 
   
-  background-image: url("img_out/out39.jpeg");
+  background-image: url("pictures/out39.jpeg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -656,3 +656,4 @@ footer {
   .main-nav { justify-content: center; }
   .hero h1 { font-size: 2.2rem; }
 }
+

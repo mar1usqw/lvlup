@@ -65,90 +65,104 @@ document.addEventListener("DOMContentLoaded", () => {
   // --------------------------
   // LOAD GALLERIES (Cloudinary folders)
   // --------------------------
-  async function loadGallery(gallery) {
-    const folder = gallery.dataset.folder;
-    const step = Number(gallery.dataset.step) || 12;
+async function loadGallery(gallery) {
+  const folder = gallery.dataset.folder;
+  const step = Number(gallery.dataset.step) || 6;
 
-    const section = gallery.closest("section") || gallery.parentElement;
-    const button = section?.querySelector(".show-more");
+  const section = gallery.closest("section") || gallery.parentElement;
+  const button = section?.querySelector(".show-more");
 
-    if (!folder) {
-      console.warn("Missing data-folder on gallery:", gallery);
-      return;
-    }
+  if (!folder) {
+    console.warn("Missing data-folder on gallery:", gallery);
+    return;
+  }
 
-    // Disable button until we know we have more
-    if (button) {
-      button.disabled = true;
-      button.style.opacity = "0.7";
-      button.textContent = "Loading...";
-    }
+  if (button) {
+    button.disabled = true;
+    button.style.opacity = "0.7";
+    button.textContent = "Loading...";
+  }
 
-    const res = await fetch(
-      `/.netlify/functions/list-images?folder=${encodeURIComponent(folder)}`,
-      { cache: "no-store" }
-    );
+  const res = await fetch(
+    `/.netlify/functions/list-images?folder=${encodeURIComponent(folder)}`,
+    { cache: "no-store" }
+  );
 
-    if (!res.ok) {
-      console.error("Function call failed:", folder, await res.text());
-      if (button) {
-        button.disabled = true;
-        button.style.display = "none";
-      }
-      return;
-    }
+  if (!res.ok) {
+    const errText = await res.text();
+    console.error("Function call failed:", folder, errText);
 
-    const data = await res.json();
-
-    // support both shapes: {images:[...]} or {urls:[...]}
-    const urls = Array.isArray(data.images)
-      ? data.images
-      : (Array.isArray(data.urls) ? data.urls : []);
-
-    gallery.innerHTML = "";
-    let shown = 0;
-
-    function renderMore() {
-      const slice = urls.slice(shown, shown + step);
-
-      slice.forEach((url) => {
-        const img = document.createElement("img");
-        img.loading = "lazy";
-        img.src = url;
-        img.alt = "Project image";
-
-        img.addEventListener("click", () => {
-          currentImages = Array.from(gallery.querySelectorAll("img"));
-          currentIndex = currentImages.indexOf(img);
-          openLightbox();
-        });
-
-        gallery.appendChild(img);
-      });
-
-      shown += slice.length;
-
-      if (button) {
-        const hasMore = shown < urls.length;
-        button.style.display = hasMore ? "block" : "none";
-      }
-    }
-
-    // First render
-    renderMore();
-
-    // Button state
     if (button) {
       button.disabled = false;
       button.style.opacity = "1";
-      button.textContent = "Show More";
-
-      // Avoid multiple listeners if loadGallery is ever called again
-      button.onclick = () => renderMore();
+      button.textContent = "Retry";
+      button.onclick = () => loadGallery(gallery);
     }
+    return;
   }
 
-  document.querySelectorAll(".gallery").forEach((g) => {
-    loadGallery(g).catch(console.error);
-  });
-});
+  const data = await res.json();
+  const urls = Array.isArray(data.images)
+    ? data.images
+    : (Array.isArray(data.urls) ? data.urls : []);
+
+  let shown = 0;
+
+  function renderRange(count) {
+    gallery.innerHTML = "";
+    urls.slice(0, count).forEach((url) => {
+      const img = document.createElement("img");
+      img.loading = "lazy";
+      img.src = url;
+      img.alt = "Project image";
+
+      img.addEventListener("click", () => {
+        currentImages = Array.from(gallery.querySelectorAll("img"));
+        currentIndex = currentImages.indexOf(img);
+        openLightbox();
+      });
+
+      gallery.appendChild(img);
+    });
+  }
+
+  function updateButton() {
+    if (!button) return;
+
+    if (urls.length <= step) {
+      button.style.display = "none";
+      return;
+    }
+
+    button.style.display = "block";
+    button.disabled = false;
+    button.style.opacity = "1";
+    button.textContent = shown >= urls.length ? "Show Less" : "Show More";
+  }
+
+  function showMore() {
+    shown = Math.min(shown + step, urls.length);
+    renderRange(shown);
+    updateButton();
+  }
+
+  function showLess() {
+    shown = Math.min(step, urls.length);
+    renderRange(shown);
+    updateButton();
+    section?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  // Initial render
+  shown = Math.min(step, urls.length);
+  renderRange(shown);
+  updateButton();
+
+  if (button) {
+    button.onclick = () => {
+      if (shown >= urls.length) showLess();
+      else showMore();
+    };
+  }
+}
+

@@ -116,3 +116,18 @@ document.addEventListener("DOMContentLoaded", () => {
 document.querySelectorAll(".gallery").forEach((gallery) => {
   loadGalleryFromCloudinary(gallery).catch(console.error);
 });
+
+
+  // Load shared header
+const headerMount = document.getElementById("site-header");
+
+if (headerMount) {
+  fetch("/header.html", { cache: "no-store" })
+    .then((res) => {
+      if (!res.ok) throw new Error("header.html not found");
+      return res.text();
+    })
+    .then((html) => {
+      headerMount.innerHTML = html;
+    })
+    .catch((err) => console.warn("Header load failed:", err));

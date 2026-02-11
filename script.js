@@ -166,3 +166,16 @@ async function loadGallery(gallery) {
   }
 }
 
+  const headerMount = document.getElementById("site-header");
+if (headerMount) {
+  fetch(`${window.location.origin}/header.html`, { cache: "no-store" })
+    .then((res) => {
+      if (!res.ok) throw new Error(`header.html not found (${res.status})`);
+      return res.text();
+    })
+    .then((html) => (headerMount.innerHTML = html))
+    .catch((err) => console.warn("Header load failed:", err));
+}
+
+
+

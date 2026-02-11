@@ -1,19 +1,18 @@
 document.addEventListener("DOMContentLoaded", () => {
-
-  // =========================
-  // LOAD SHARED HEADER
-  // =========================
+  // -------------------------
+  // Load shared header
+  // -------------------------
   const headerMount = document.getElementById("site-header");
   if (headerMount) {
     fetch("/header.html", { cache: "no-store" })
-      .then(res => res.text())
-      .then(html => headerMount.innerHTML = html)
-      .catch(err => console.warn("Header load failed:", err));
+      .then((res) => res.text())
+      .then((html) => (headerMount.innerHTML = html))
+      .catch((err) => console.warn("Header load failed:", err));
   }
 
-  // =========================
+  // --------------------------
   // LIGHTBOX
-  // =========================
+  // --------------------------
   const lightbox = document.getElementById("lightbox");
   const lightboxImg = document.getElementById("lightbox-img");
   const closeBtn = document.querySelector(".close");
@@ -52,29 +51,29 @@ document.addEventListener("DOMContentLoaded", () => {
   nextBtn?.addEventListener("click", nextImage);
   prevBtn?.addEventListener("click", prevImage);
 
-  lightbox?.addEventListener("click", e => {
+  lightbox?.addEventListener("click", (e) => {
     if (e.target === lightbox) closeLightbox();
   });
 
-  document.addEventListener("keydown", e => {
+  document.addEventListener("keydown", (e) => {
     if (!lightbox || lightbox.style.display !== "flex") return;
     if (e.key === "Escape") closeLightbox();
     if (e.key === "ArrowRight") nextImage();
     if (e.key === "ArrowLeft") prevImage();
   });
 
-  // =========================
-  // LOAD GALLERIES FROM CLOUDINARY
-  // =========================
+  // --------------------------
+  // LOAD GALLERIES
+  // --------------------------
   async function loadGallery(gallery) {
-    const folder = gallery.dataset.folder;          // e.g. "projects/bathroom"
+    const folder = gallery.dataset.folder;
     const step = Number(gallery.dataset.step) || 12;
 
     const container = gallery.closest("section") || gallery.parentElement;
     const button = container?.querySelector(".load-more");
 
     if (!folder) {
-      console.warn("Gallery missing data-folder", gallery);
+      console.warn("Missing data-folder on gallery:", gallery);
       return;
     }
 
@@ -84,12 +83,15 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     if (!res.ok) {
-      console.error("Failed loading gallery", folder);
+      console.error("Function call failed:", folder, await res.text());
       return;
     }
 
     const data = await res.json();
     const urls = Array.isArray(data.urls) ? data.urls : [];
+
+    // Debug:
+    console.log("Loaded", urls.length, "images for", folder);
 
     gallery.innerHTML = "";
     let shown = 0;
@@ -97,10 +99,11 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderMore() {
       const slice = urls.slice(shown, shown + step);
 
-      slice.forEach(url => {
+      slice.forEach((url) => {
         const img = document.createElement("img");
         img.loading = "lazy";
         img.src = url;
+        img.alt = "Project image";
 
         img.addEventListener("click", () => {
           currentImages = Array.from(gallery.querySelectorAll("img"));
@@ -122,8 +125,5 @@ document.addEventListener("DOMContentLoaded", () => {
     button?.addEventListener("click", renderMore);
   }
 
-  document.querySelectorAll(".gallery").forEach(gallery => {
-    loadGallery(gallery).catch(console.error);
-  });
-
+  document.querySelectorAll(".gallery").forEach((g) => loadGallery(g).catch(console.error));
 });

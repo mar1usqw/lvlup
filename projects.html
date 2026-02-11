@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Projects | Level Up Construct Ltd.</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="pictures/luc_logo.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="projects">
+
+<div id="site-header"></div>
+
+<div class="page">
+  <main class="container">
+
+    <!-- Outside Gallery -->
+    <section id="outside">
+      <h2>Outside</h2>
+      <div class="gallery" data-folder="projects/outside" data-step="12" data-prefix="out"></div>
+      <button class="show-more">Show More</button>
+    </section>
+
+    <!-- Inside Gallery -->
+    <section id="inside">
+      <h2>Inside</h2>
+      <div class="gallery" data-folder="projects/inside" data-step="12" data-prefix="in"></div>
+      <button class="show-more">Show More</button>
+    </section>
+
+    <!-- Bathroom Gallery -->
+    <section id="bathroom">
+      <h2>Bathroom</h2>
+      <div class="gallery" data-folder="projects/bathroom" data-step="12" data-prefix="bath"></div>
+      <button class="show-more">Show More</button>
+    </section>
+
+    <!-- Kitchen Gallery -->
+    <section id="kitchen">
+      <h2>Kitchen</h2>
+      <div class="gallery" data-folder="projects/kitchen" data-step="12" data-prefix="kit"></div>
+      <button class="show-more">Show More</button>
+    </section>
+
+  </main>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <span class="close" aria-label="Close">&times;</span>
+    <span class="nav prev" aria-label="Previous image">&#10094;</span>
+    <img id="lightbox-img" alt="Project image preview" />
+    <span class="nav next" aria-label="Next image">&#10095;</span>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Level Up Construct Ltd.</p>
+  </footer>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

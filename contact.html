@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Contact | Level Up Construct Ltd.</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="pictures/luc_logo.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div id="page-loader" class="loader" aria-hidden="true">
+    <div class="loader-card">
+      <div class="loader-bar"><span></span></div>
+      <p class="loader-text">Loading…</p>
+    </div>
+  </div>
+
+  <div id="site-header"></div>
+
+  <div class="page contact-page">
+    <main class="container">
+      <header class="page-head">
+        <h1>Contact Us</h1>
+        <p>Tell us about your project — we’ll get back to you as soon as possible.</p>
+      </header>
+
+      <div class="contact-grid">
+        <!-- LEFT -->
+        <section class="contact-card">
+          <h2>Get in touch</h2>
+
+          <div class="info-list">
+            <div class="info-item">
+              <div class="info-icon">📞</div>
+              <div>
+                <div class="info-label">Phone</div>
+                <a class="info-value" href="tel:+447438011588">+44 7438 011 588</a>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <div class="info-icon">✉️</div>
+              <div>
+                <div class="info-label">Email</div>
+                <a class="info-value" href="mailto:info@levelupconstruct.co.uk">info@levelupconstruct.co.uk</a>
+              </div>
+            </div>
+
+            <div class="info-item">
+              <div class="info-icon">📍</div>
+              <div>
+                <div class="info-label">Service Area</div>
+                <div class="info-value">London & Surrounding Areas</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="map-box">
+            <iframe
+              src="https://www.google.com/maps?q=London,UK&output=embed"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              allowfullscreen>
+            </iframe>
+          </div>
+        </section>
+
+        <!-- RIGHT -->
+        <section class="contact-card">
+          <h2>Request a Quote</h2>
+
+          <form class="contact-form" action="#" method="POST" autocomplete="on">
+            <div class="field-row">
+              <div class="field">
+                <label for="name">Full Name</label>
+                <input id="name" name="name" type="text" placeholder="John Smith" required />
+              </div>
+
+              <div class="field">
+                <label for="phone">Phone</label>
+                <input id="phone" name="phone" type="tel" placeholder="+44..." />
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" placeholder="you@email.com" required />
+              </div>
+
+              <div class="field">
+                <label for="service">Service</label>
+                <select id="service" name="service" required>
+                  <option value="" selected disabled>Select a service</option>
+                  <option>Residential Construction</option>
+                  <option>Commercial Construction</option>
+                  <option>Home Renovations</option>
+                  <option>Kitchen Remodeling</option>
+                  <option>Bathroom Remodeling</option>
+                  <option>Interior Finishing</option>
+                  <option>Exterior Works</option>
+                  <option>Project Management</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="subject">Subject</label>
+              <input id="subject" name="subject" type="text" placeholder="Kitchen renovation quote" required />
+            </div>
+
+            <div class="field">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" placeholder="Tell us location, timeline, and what you need…" required></textarea>
+            </div>
+
+            <button class="contact-btn" type="submit">Send Message</button>
+
+            <div class="checkbox-field">
+              <label>
+                <input type="checkbox" required>
+                <span>
+                  I agree to be contacted about my request.
+                </span>
+              </label>
+            </div>
+            
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <p>&copy; 2026 Level Up Construct Ltd.</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
